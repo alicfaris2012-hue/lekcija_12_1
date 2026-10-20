@@ -1,41 +1,83 @@
 <?php
 
+session_start();
+
 require_once "config.php";
 
 // Provjera da li je korisnik prijavljen
-if (!isset($_SESSION["user_id"])) {
+if (!isset($_SESSION['username'])) {
     header("Location: login.php");
-    exit;
+    exit();
 }
 
-$username = htmlspecialchars(
-    $_SESSION["username"],
-    ENT_QUOTES,
-    "UTF-8"
-);
+// Preuzimanje svih korisnika iz baze
+$sql = "SELECT * FROM new_users";
 
-$name = htmlspecialchars(
-    $_SESSION["name"],
-    ENT_QUOTES,
-    "UTF-8"
-);
+$stmt = $conn->prepare($sql);
+$stmt->execute();
 
-include "header.php";
+$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
-<!-- Navigacija -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background-color: #ffffff;
+            border-right: 1px solid #ddd;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .sidebar a:hover {
+            background-color: #e9ecef;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
 <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
 
-        <a class="navbar-brand" href="dashboard.php">
-            Digital School
-        </a>
+        <span class="navbar-brand">
+            Welcome,
+            <?= htmlspecialchars($_SESSION['username']) ?>
+        </span>
 
-        <div class="navbar-nav ms-auto">
-            <a class="nav-link" href="logout.php">
-                Sign out
-            </a>
-        </div>
+        <a href="logout.php"
+           class="btn btn-outline-light">
+            Sign out
+        </a>
 
     </div>
 </nav>
@@ -43,56 +85,104 @@ include "header.php";
 <div class="container-fluid">
     <div class="row">
 
-        <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 sidebar p-0">
+        <!-- SIDEBAR -->
+        <div class="col-md-2 sidebar">
+
+            <h5 class="mt-4 ms-3">Menu</h5>
 
             <a href="dashboard.php">
                 Dashboard
             </a>
 
-            <a href="logout.php">
-                Logout
+            <a href="profile.php">
+                Edit Profile
             </a>
 
-        </nav>
+        </div>
 
-        <!-- Glavni sadrzaj -->
-        <main class="col-md-9 col-lg-10 dashboard-content">
+        <!-- MAIN CONTENT -->
+        <div class="col-md-10 main-content">
 
-            <h1>Dashboard</h1>
+            <h2>Dashboard</h2>
 
-            <p>
-                Welcome,
-                <strong><?php echo $name; ?></strong>!
-            </p>
+            <hr>
 
-            <div class="card mt-4">
-                <div class="card-body">
+            <h4>All Registered Users</h4>
 
-                    <h5 class="card-title">
-                        User Information
-                    </h5>
+            <table class="table table-striped table-bordered">
 
-                    <p>
-                        Username:
-                        <?php echo $username; ?>
-                    </p>
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
 
-                    <p>
-                        You are successfully logged in!
-                    </p>
+                <tbody>
 
-                    <a href="logout.php"
-                       class="btn btn-danger">
-                        Log out
-                    </a>
+                <?php foreach ($users as $user): ?>
 
-                </div>
-            </div>
+                    <tr>
+                        <td><?= $user['id'] ?></td>
 
-        </main>
+                        <td>
+                            <?= htmlspecialchars($user['username']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($user['name']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($user['surname']) ?>
+                        </td>
+
+                        <td>
+                            <?= htmlspecialchars($user['email']) ?>
+                        </td>
+
+                        <td>
+                            <a
+                                href="profile.php?id=<?= $user['id'] ?>"
+                                class="btn btn-primary btn-sm">
+                                Update
+                            </a>
+
+                            <form
+                                action="delete.php"
+                                method="POST"
+                                class="d-inline"
+                                onsubmit="return confirm('Are you sure?')">
+
+                                <input
+                                    type="hidden"
+                                    name="id"
+                                    value="<?= $user['id'] ?>">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger btn-sm">
+                                    Delete
+                                </button>
+
+                            </form>
+                        </td>
+                    </tr>
+
+                <?php endforeach; ?>
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 </div>
 
-<?php include "footer.php"; ?>
+</body>
+</html>
