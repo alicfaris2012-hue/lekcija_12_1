@@ -14,7 +14,6 @@ if ($username === "" || $password === "") {
     exit("Popunite sva polja!");
 }
 
-// Pronalazimo korisnika u bazi
 $sql = "SELECT * FROM new_users
         WHERE username = :username";
 
@@ -26,15 +25,13 @@ $stmt->execute([
 
 $user = $stmt->fetch();
 
-// Provjeravamo korisničko ime i lozinku
 if (
     $user &&
     password_verify($password, $user["password"])
 ) {
-    // Novi session ID nakon uspješne prijave
+   
     session_regenerate_id(true);
 
-    // Spremamo podatke u sesiju
     $_SESSION["user_id"] = $user["id"];
     $_SESSION["username"] = $user["username"];
     $_SESSION["name"] = $user["name"];

@@ -4,13 +4,11 @@ session_start();
 
 require_once "config.php";
 
-// Provjera da li je korisnik prijavljen
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
 
-// Preuzimanje svih korisnika iz baze
 $sql = "SELECT * FROM new_users";
 
 $stmt = $conn->prepare($sql);
@@ -29,7 +27,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <title>Dashboard</title>
 
-    <!-- Bootstrap CSS -->
+    
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -65,7 +63,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
 
@@ -85,7 +82,6 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="container-fluid">
     <div class="row">
 
-        <!-- SIDEBAR -->
         <div class="col-md-2 sidebar">
 
             <h5 class="mt-4 ms-3">Menu</h5>
@@ -94,13 +90,14 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 Dashboard
             </a>
 
+            <a href="productDashboard.php">Products Dashboard</a>
+
             <a href="profile.php">
                 Edit Profile
             </a>
 
         </div>
 
-        <!-- MAIN CONTENT -->
         <div class="col-md-10 main-content">
 
             <h2>Dashboard</h2>

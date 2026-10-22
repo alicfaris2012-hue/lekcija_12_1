@@ -31,7 +31,6 @@ if (strlen($password) < 8) {
     exit("Lozinka mora imati najmanje 8 znakova!");
 }
 
-// Provjera da li korisnik vec postoji
 $sql = "SELECT id FROM new_users
         WHERE username = :username
         OR email = :email";
@@ -47,13 +46,11 @@ if ($stmt->fetch()) {
     exit("Korisnicko ime ili e-mail vec postoji!");
 }
 
-// Hashiranje lozinke
 $hashedPassword = password_hash(
     $password,
     PASSWORD_DEFAULT
 );
 
-// Spremanje korisnika u bazu
 $sql = "INSERT INTO new_users
         (name, surname, username, email, password)
         VALUES

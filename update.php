@@ -35,7 +35,7 @@ if (isset($_POST['update'])) {
 
     $stmt->execute();
 
-    // Ako korisnik mijenja vlastiti username
+    
     if (
         isset($_SESSION['user_id']) &&
         $id == $_SESSION['user_id']

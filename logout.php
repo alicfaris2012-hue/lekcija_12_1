@@ -2,10 +2,9 @@
 
 require_once "config.php";
 
-// Brisanje podataka iz sesije
 $_SESSION = [];
 
-// Brisanje session cookieja
+
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
 
@@ -20,9 +19,7 @@ if (ini_get("session.use_cookies")) {
     );
 }
 
-// Zavrsavanje sesije
 session_destroy();
 
-// Povratak na Login
 header("Location: login.php");
 exit;
